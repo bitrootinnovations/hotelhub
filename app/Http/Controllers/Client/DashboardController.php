@@ -33,7 +33,7 @@ class DashboardController extends Controller
         // Active KOTs: orders with status in (pending,confirmed,preparing,served) AND payment_status != 'paid'
         $activeKots = Order::where('client_id', $clientId)
             ->whereIn('status', ['pending', 'confirmed', 'preparing', 'served'])
-            ->where('payment_status', '!=', 'paid')
+            ->where('payment_status', 'pending')
             ->count();
 
         // Total active menu items for this client
@@ -49,7 +49,7 @@ class DashboardController extends Controller
         // Table IDs that have active (unpaid) orders
         $occupiedTableIds = Order::where('client_id', $clientId)
             ->whereIn('status', ['pending', 'confirmed', 'preparing', 'served'])
-            ->where('payment_status', '!=', 'paid')
+            ->where('payment_status', 'pending')
             ->pluck('table_id');
 
         // Recent 10 orders with table name

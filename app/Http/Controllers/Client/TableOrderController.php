@@ -32,7 +32,7 @@ class TableOrderController extends Controller
         $activeOrders = Order::where('client_id', $clientId)
             ->where('table_id', $tableId)
             ->whereIn('status', ['pending', 'confirmed', 'preparing', 'served'])
-            ->where('payment_status', '!=', 'paid')
+            ->where('payment_status', 'pending')
             ->with(['items.menu'])
             ->orderBy('order_id', 'desc')
             ->get();
@@ -117,7 +117,7 @@ class TableOrderController extends Controller
                 'subtotal'       => $subtotal,
                 'gst_amount'     => $gstAmount,
                 'total_amount'   => $total,
-                'payment_status' => 'unpaid',
+                'payment_status' => 'pending',
             ]);
 
             foreach ($lines as &$line) {
@@ -182,7 +182,7 @@ class TableOrderController extends Controller
         $item = OrderItem::whereHas('order', function ($q) use ($clientId) {
             $q->where('client_id', $clientId)
               ->whereIn('status', ['pending', 'confirmed', 'preparing'])
-              ->where('payment_status', '!=', 'paid');
+              ->where('payment_status', 'pending');
         })->findOrFail($itemId);
 
         $orderId = $item->order_id;
