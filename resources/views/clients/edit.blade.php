@@ -264,6 +264,16 @@
                                             value="{{ $client->subscription_end_date?->format('d M Y') }}" readonly>
                                     </div>
                                 </div>
+                                <div class="col-sm-4 col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Plan Type</label>
+                                        <select class="form-select" name="plan_type">
+                                            <option value="Basic"   {{ old('plan_type', $client->plan_type ?? 'Basic') == 'Basic'   ? 'selected' : '' }}>Basic (Mobile App Only)</option>
+                                            <option value="Premium" {{ old('plan_type', $client->plan_type) == 'Premium' ? 'selected' : '' }}>Premium (Mobile + Web Portal)</option>
+                                        </select>
+                                        <small class="text-muted">Premium clients can access the web portal.</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

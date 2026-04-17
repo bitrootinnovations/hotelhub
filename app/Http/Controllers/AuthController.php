@@ -32,9 +32,18 @@ class AuthController extends Controller
             }
 
             $request->session()->regenerate();
+
             if (Auth::user()->client_id) {
+                $client = \App\Models\ClientMaster::find(Auth::user()->client_id);
+                if (!$client || $client->plan_type !== 'Premium') {
+                    Auth::logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    return back()->withErrors(['email' => 'Web portal access is available for Premium plan clients only. Please contact your administrator.']);
+                }
                 return redirect()->route('client.dashboard');
             }
+
             return redirect()->intended(route('dashboard'));
         }
 

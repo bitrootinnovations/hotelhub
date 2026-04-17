@@ -32,6 +32,7 @@ class ClientMasterController extends Controller
             'subscription_start_date' => $c->subscription_start_date?->format('d M Y') ?? '-',
             'subscription_end_date'   => $c->subscription_end_date?->format('d M Y') ?? '-',
             'subscription_status'     => $c->subscription_status,
+            'plan_type'               => $c->plan_type ?? 'Basic',
             'created_at'              => $c->created_at,
         ]);
         return response()->json(['data' => $clients]);
@@ -62,6 +63,7 @@ class ClientMasterController extends Controller
             'subscription_type'       => 'nullable|in:Monthly,Quarterly,Yearly',
             'subscription_price'      => 'nullable|numeric|min:0',
             'subscription_start_date' => 'nullable|date',
+            'plan_type'               => 'nullable|in:Basic,Premium',
             'password'                => 'nullable|string|min:6|confirmed',
         ]);
 
@@ -69,7 +71,7 @@ class ClientMasterController extends Controller
             'client_name', 'address', 'city', 'state', 'pincode',
             'latitude', 'longitude', 'contact_number', 'email_id',
             'gst_number', 'upi_id', 'status_id',
-            'subscription_type', 'subscription_price', 'subscription_start_date',
+            'subscription_type', 'subscription_price', 'subscription_start_date', 'plan_type',
         ]);
 
         if ($request->filled('password')) {
@@ -123,13 +125,14 @@ class ClientMasterController extends Controller
             'subscription_type'       => 'nullable|in:Monthly,Quarterly,Yearly',
             'subscription_price'      => 'nullable|numeric|min:0',
             'subscription_start_date' => 'nullable|date',
+            'plan_type'               => 'nullable|in:Basic,Premium',
         ]);
 
         $data = $request->only([
             'client_name', 'address', 'city', 'state', 'pincode',
             'latitude', 'longitude', 'contact_number', 'email_id',
             'gst_number', 'upi_id', 'status_id',
-            'subscription_type', 'subscription_price', 'subscription_start_date',
+            'subscription_type', 'subscription_price', 'subscription_start_date', 'plan_type',
         ]);
         $data['subscription_end_date'] = $this->calcEndDate(
             $request->subscription_type,

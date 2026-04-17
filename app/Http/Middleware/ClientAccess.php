@@ -14,8 +14,20 @@ class ClientAccess
             return redirect('/login');
         }
 
-        if (is_null(Auth::user()->client_id)) {
+        $user = Auth::user();
+
+        if (is_null($user->client_id)) {
             return redirect('/dashboard');
+        }
+
+        // Check client's plan — only Premium gets web portal access
+        $client = \App\Models\ClientMaster::find($user->client_id);
+        if (!$client || $client->plan_type !== 'Premium') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Web portal access is available for Premium plan clients only. Please contact your administrator.']);
         }
 
         return $next($request);

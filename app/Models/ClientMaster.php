@@ -18,7 +18,7 @@ class ClientMaster extends Authenticatable implements JWTSubject
         'client_name', 'image', 'address', 'city', 'state', 'pincode',
         'latitude', 'longitude', 'contact_number', 'email_id', 'password',
         'aadhar_image', 'gst_number', 'upi_id', 'subscription_type', 'subscription_price',
-        'subscription_start_date', 'subscription_end_date', 'status_id', 'created_by',
+        'subscription_start_date', 'subscription_end_date', 'plan_type', 'status_id', 'created_by',
     ];
 
     protected $hidden = ['password', 'deleted_at'];
