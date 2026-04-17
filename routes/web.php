@@ -159,6 +159,15 @@ Route::middleware('auth')->group(function () {
                 ->name('client.menu-report.topSelling');
         });
 
+        // Table Orders
+        Route::prefix('table')->group(function () {
+            Route::get('/{tableId}',                   [App\Http\Controllers\Client\TableOrderController::class, 'show'])->name('client.table.show');
+            Route::post('/{tableId}/order',            [App\Http\Controllers\Client\TableOrderController::class, 'placeOrder'])->name('client.table.placeOrder');
+            Route::post('/order/{orderId}/status',     [App\Http\Controllers\Client\TableOrderController::class, 'updateStatus'])->name('client.order.updateStatus');
+            Route::post('/order/{orderId}/checkout',   [App\Http\Controllers\Client\TableOrderController::class, 'checkout'])->name('client.order.checkout');
+            Route::post('/item/{itemId}/remove',       [App\Http\Controllers\Client\TableOrderController::class, 'removeItem'])->name('client.order.removeItem');
+        });
+
         // Client Employees (Staff)
         Route::prefix('employees')->group(function () {
             Route::get('/',               [App\Http\Controllers\Client\ClientEmployeeController::class, 'index'])

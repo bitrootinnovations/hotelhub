@@ -20,4 +20,9 @@ class CategoryMaster extends Model
     {
         return $this->belongsTo(ClientMaster::class, 'client_id', 'client_id');
     }
+
+    public function menus()
+    {
+        return $this->hasMany(MenuMaster::class, 'category_id', 'category_id');
+    }
 }

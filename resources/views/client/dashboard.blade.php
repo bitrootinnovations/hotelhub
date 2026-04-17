@@ -69,11 +69,11 @@
     {{-- Table Status --}}
     <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between">
-            <h5 class="mb-0">Table Status</h5>
+            <h5 class="mb-0">Table Status <small class="text-muted fw-normal fs-13 ms-1">— click a table to manage orders</small></h5>
             <div class="d-flex gap-2">
-                <span class="badge bg-success">Available</span>
-                <span class="badge bg-danger">Occupied</span>
-                <span class="badge bg-secondary">Inactive</span>
+                <span class="badge bg-success"><i class="ti ti-circle-filled me-1"></i>Available</span>
+                <span class="badge bg-danger"><i class="ti ti-circle-filled me-1"></i>Occupied</span>
+                <span class="badge bg-secondary"><i class="ti ti-circle-filled me-1"></i>Inactive</span>
             </div>
         </div>
         <div class="card-body">
@@ -84,34 +84,58 @@
                 @foreach($tables as $table)
                     @php
                         if ($table->status_id == 0) {
-                            $borderClass = 'border-secondary';
-                            $badgeClass  = 'bg-secondary';
-                            $statusLabel = 'Inactive';
+                            $borderClass  = 'border-secondary';
+                            $badgeClass   = 'bg-secondary';
+                            $bgHover      = '';
+                            $statusLabel  = 'Inactive';
+                            $isClickable  = false;
                         } elseif ($occupiedTableIds->contains($table->table_id)) {
-                            $borderClass = 'border-danger';
-                            $badgeClass  = 'bg-danger';
-                            $statusLabel = 'Occupied';
+                            $borderClass  = 'border-danger';
+                            $badgeClass   = 'bg-danger';
+                            $bgHover      = 'table-card-occupied';
+                            $statusLabel  = 'Occupied';
+                            $isClickable  = true;
                         } else {
-                            $borderClass = 'border-success';
-                            $badgeClass  = 'bg-success';
-                            $statusLabel = 'Available';
+                            $borderClass  = 'border-success';
+                            $badgeClass   = 'bg-success';
+                            $bgHover      = 'table-card-available';
+                            $statusLabel  = 'Available';
+                            $isClickable  = true;
                         }
                     @endphp
                 <div class="col">
-                    <div class="card text-center h-100 border-2 {{ $borderClass }}">
-                        <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center">
-                            <div class="fw-bold fs-18">{{ $table->table_name }}</div>
-                            <small class="text-muted">{{ $table->tableType->type_name ?? '-' }}</small>
-                            <small>Cap: {{ $table->capacity ?? '?' }}</small>
+                    @if($isClickable)
+                    <a href="{{ route('client.table.show', $table->table_id) }}" class="text-decoration-none">
+                    @endif
+                    <div class="card text-center h-100 border-2 {{ $borderClass }} {{ $bgHover }} {{ $isClickable ? 'table-card-clickable' : '' }}">
+                        <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center gap-1">
+                            @if($occupiedTableIds->contains($table->table_id))
+                                <i class="ti ti-users fs-20 text-danger"></i>
+                            @elseif($table->status_id == 0)
+                                <i class="ti ti-ban fs-20 text-secondary"></i>
+                            @else
+                                <i class="ti ti-armchair fs-20 text-success"></i>
+                            @endif
+                            <div class="fw-bold fs-16">{{ $table->table_name }}</div>
+                            <small class="text-muted lh-1">{{ $table->tableType->type_name ?? '-' }}</small>
+                            <small class="text-muted lh-1">Cap: {{ $table->capacity ?? '?' }}</small>
                             <span class="badge mt-1 {{ $badgeClass }}">{{ $statusLabel }}</span>
                         </div>
                     </div>
+                    @if($isClickable)
+                    </a>
+                    @endif
                 </div>
                 @endforeach
             </div>
             @endif
         </div>
     </div>
+
+<style>
+.table-card-clickable { cursor: pointer; transition: transform .15s, box-shadow .15s; }
+.table-card-clickable:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+</style>
 
     {{-- Recent Orders --}}
     <div class="card">
