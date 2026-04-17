@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'jwt.auth'      => \App\Http\Middleware\JwtMiddleware::class,
         'mobile.auth'   => \App\Http\Middleware\MobileAuthMiddleware::class,
         'client.access' => \App\Http\Middleware\ClientAccess::class,
+        'admin.only'    => \App\Http\Middleware\AdminOnly::class,
     ];
 }

@@ -10,6 +10,11 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // Client users belong on the client portal dashboard
+        if (!is_null(auth()->user()->client_id)) {
+            return redirect()->route('client.dashboard');
+        }
+
         $today     = now()->toDateString();
         $thisMonth = now()->startOfMonth()->toDateString();
 
