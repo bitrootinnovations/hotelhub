@@ -113,7 +113,7 @@ class TableOrderController extends Controller
                 'user_id'        => Auth::id(),
                 'order_number'   => Order::generateOrderNumber($clientId),
                 'status'         => 'pending',
-                'order_type'     => 'dine-in',
+                'order_type'     => 'dine_in',
                 'subtotal'       => $subtotal,
                 'gst_amount'     => $gstAmount,
                 'total_amount'   => $total,
