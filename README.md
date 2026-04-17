@@ -940,4 +940,123 @@ PUT  /menu/{id}
 
 ---
 
-*Last updated: 2026-04-03 — Tasks 1–20 complete · Live at https://bitrootinnovations.com/hotelhub*
+---
+
+### Task 21 — Dashboard Fixes (Images, Menu Names, Client Logo)
+**Done By:** 🤖 Claude AI
+**Date:** 2026-04-17
+
+**What was done:**
+- Fixed all 5 image path occurrences in `dashboard.blade.php` — changed from `/storage/` to `/storage/app/public/` to match server disk layout
+- Made `$base_url` dynamic — reads from `config('app.url')` via `AppServiceProvider` so it no longer gets overwritten on every deploy
+- Added menu names display in Recent Orders and Transactions table — shows first 2 item names with `+N more` for larger orders
+- Fixed missing client logo in Top Hotels list — corrected image path pattern
+
+**Key change in `AppServiceProvider`:**
+```php
+$base_url = rtrim(config('app.url'), '/');
+```
+
+---
+
+### Task 22 — Client Portal (Dashboard, Orders, Menus, Employees, Reports)
+**Done By:** 🤖 Claude AI
+**Date:** 2026-04-17
+
+**What was done:**
+
+**New Controllers (`app/Http/Controllers/Client/`):**
+- `DashboardController` — today's orders, revenue, active KOTs, total menu items, live table occupancy grid, recent 10 orders
+- `MenuReportController` — menu-wise sales (qty + revenue per item), top selling list
+- `ClientEmployeeController` — full CRUD for restaurant staff scoped to logged-in client
+
+**New Middleware:**
+- `ClientAccess` — registered as `client.access`; checks auth, checks `client_id` is set, checks `plan_type = Premium`; logs out and redirects with error on failure
+
+**New Views (`resources/views/client/`):**
+- `dashboard.blade.php` — 4 stat cards, live table grid (color-coded: green=available, red=occupied, grey=inactive), recent orders table
+- `menu-report.blade.php` — date filter, 3 summary cards, DataTable, Top 10 selling list
+
+**Scoped Controllers (Admin controllers updated for client users):**
+- `CategoryMasterController` — `allData`, `store`, `update` automatically scope to `client_id`
+- `MenuMasterController` — same scoping pattern
+- `OrderReportController` — forces `client_id` filter; hides client dropdown in view
+
+**Blade Views updated:**
+- `menus/add.blade.php` and `edit.blade.php` — client dropdown hidden for client users, replaced with hidden input; JS fixed to work with both `<select>` and `<input>`
+- `categories/add.blade.php` and `edit.blade.php` — client dropdown wrapped with `@if(!$isClientUser)`
+
+**Routes (`routes/web.php`):**
+- `/client/*` routes added under `auth` + `client.access` middleware group
+- Client portal: dashboard, category master, menu master, employee master, order report, menu-wise report
+
+**Left Menu (`left-menu.blade.php`):**
+- "Main" section hidden for client users
+- All admin sections (Client Management, Employee Management, Reports, User Management, Restaurant Management) hidden via `@if(!$isClientUser)`
+- New **Client Portal** section shown only for `@if($isClientUser)`: Dashboard, Categories, Menu Master, Employees, Order Report, Menu-wise Report
+
+**Header (`header.blade.php`):**
+- Search, store select, Add New, POS, flag, email, notifications, settings — all hidden for client users
+- Map pin icon — shown for admin only
+- Client logout: right-aligned with `ms-auto`, shows user avatar initial + name + styled logout button
+
+---
+
+### Task 23 — Two-Tier Client Plan System (Basic / Premium)
+**Done By:** 🤖 Claude AI
+**Date:** 2026-04-17
+
+**What was done:**
+
+**Migration:**
+- `2026_04_17_000001_add_plan_type_to_client_masters` — adds `plan_type` enum (`Basic`/`Premium`) defaulting to `Basic` after `subscription_end_date`
+
+**Model (`ClientMaster.php`):**
+- Added `plan_type` to `$fillable`
+
+**Controller (`ClientMasterController.php`):**
+- Added `plan_type` validation (`nullable|in:Basic,Premium`) in `store()` and `update()`
+- Included `plan_type` in `$request->only()` for both methods
+- Added `plan_type` to `allData()` response (defaults to `'Basic'` if null)
+
+**Auth (`AuthController.php`):**
+- On login: if `client_id` is set, checks `plan_type === 'Premium'`; if Basic, logs out and returns error: *"Web portal access is available for Premium plan clients only. Please contact your administrator."*
+- Premium clients redirect to `client.dashboard`
+
+**Middleware (`ClientAccess.php`):**
+- Same Premium check on every `/client/*` request — defence in depth
+- Basic plan clients are logged out and redirected to login with error
+
+**Views:**
+- `clients/add.blade.php` — Plan Type select added in Subscription Details accordion (Basic default, Premium option with helper text)
+- `clients/edit.blade.php` — same select pre-filled from `$client->plan_type`
+
+**Data update:**
+- Navale Restro (`client_id=1`) updated to `plan_type = Premium` on production server
+
+| Plan | Mobile App | Web Portal |
+|---|---|---|
+| Basic | ✅ | ❌ |
+| Premium | ✅ | ✅ |
+
+---
+
+### Task 24 — GitHub Repository Setup & README
+**Done By:** 🤖 Claude AI
+**Date:** 2026-04-17
+
+**What was done:**
+- Initialized git repository and pushed entire codebase to `https://github.com/bitrootinnovations/hotelhub.git`
+- Added `ftp-config.php` to `.gitignore` (contains server credentials)
+- Created and maintained this `README.md` with full project documentation
+- Subsequent feature commits pushed to `master` branch
+
+**Commit history:**
+| Commit | Description |
+|---|---|
+| `cd7c0e9` | Initial commit — HotelHub production codebase |
+| `b596da1` | Add two-tier client plan system (Basic / Premium) |
+
+---
+
+*Last updated: 2026-04-17 — Tasks 1–24 complete · Live at https://bitrootinnovations.com/hotelhub*
