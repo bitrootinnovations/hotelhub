@@ -414,6 +414,11 @@ function addPrinterRow(id, printerId, deviceName, printerType) {
                 '<option value="Network"'+(printerType==='Network'?' selected':'')+'>Network</option>' +
             '</select>' +
         '</div>' +
+        '<div class="col-sm-3 col-12">' +
+            '<label class="form-label fs-12 mb-1">Serial Number</label>' +
+            '<input type="text" class="form-control form-control-sm" name="printers['+idx+'][serial_number]"' +
+            ' placeholder="e.g. SN123456789" value="">' +
+        '</div>' +
         '<div class="col-sm-1 col-12">' +
             '<button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest(\'.printer-row\').remove()" title="Remove">' +
                 '<i data-feather="trash-2" style="width:14px;height:14px;"></i>' +

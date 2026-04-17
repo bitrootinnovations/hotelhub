@@ -367,7 +367,14 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-sm-1 col-12">
+                                    <div class="col-sm-3 col-12">
+                                        <label class="form-label fs-12 mb-1">Serial Number</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            name="printers[{{ $loop->index }}][serial_number]"
+                                            value="{{ old('printers.'.$loop->index.'.serial_number', $printer->serial_number) }}"
+                                            placeholder="e.g. SN123456789">
+                                    </div>
+                                    <div class="col-sm-1 col-12 d-flex align-items-end">
                                         <button type="button" class="btn btn-sm btn-outline-danger w-100"
                                             onclick="this.closest('.printer-row').remove()" title="Remove">
                                             <i data-feather="trash-2" style="width:14px;height:14px;"></i>
@@ -451,7 +458,7 @@ document.getElementById('subscriptionStartDate').addEventListener('change', upda
 
 // ── Printer rows ───────────────────────────────────────────────────────────────
 var printerIndex = {{ $printers->count() }};
-function addPrinterRow(id, printerId, deviceName, printerType) {
+function addPrinterRow(id, printerId, deviceName, printerType, serialNumber) {
     var idx = printerIndex++;
     var types = ['Bluetooth','WiFi','USB','Network'];
     var opts = '<option value="">-- Select --</option>' +
@@ -474,7 +481,12 @@ function addPrinterRow(id, printerId, deviceName, printerType) {
             '<label class="form-label fs-12 mb-1">Type</label>' +
             '<select class="form-select form-select-sm" name="printers['+idx+'][printer_type]">'+opts+'</select>' +
         '</div>' +
-        '<div class="col-sm-1 col-12">' +
+        '<div class="col-sm-3 col-12">' +
+            '<label class="form-label fs-12 mb-1">Serial Number</label>' +
+            '<input type="text" class="form-control form-control-sm" name="printers['+idx+'][serial_number]"' +
+            ' placeholder="e.g. SN123456789" value="'+(serialNumber||'')+'">' +
+        '</div>' +
+        '<div class="col-sm-1 col-12 d-flex align-items-end">' +
             '<button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest(\'.printer-row\').remove()" title="Remove">' +
                 '<i data-feather="trash-2" style="width:14px;height:14px;"></i>' +
             '</button>' +

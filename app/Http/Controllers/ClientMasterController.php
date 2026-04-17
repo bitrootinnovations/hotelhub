@@ -70,6 +70,7 @@ class ClientMasterController extends Controller
             'printers.*.printer_id'         => 'required_with:printers|string|max:100',
             'printers.*.device_name'        => 'nullable|string|max:100',
             'printers.*.printer_type'       => 'nullable|string|max:50',
+            'printers.*.serial_number'      => 'nullable|string|max:100',
         ]);
 
         $data = $request->only([
@@ -104,11 +105,12 @@ class ClientMasterController extends Controller
             foreach ($request->printers as $p) {
                 if (empty($p['printer_id'])) continue;
                 Printer::create([
-                    'client_id'    => $client->client_id,
-                    'mac_address'  => $p['printer_id'],
-                    'device_name'  => $p['device_name'] ?? null,
-                    'printer_type' => $p['printer_type'] ?? null,
-                    'status'       => 'offline',
+                    'client_id'     => $client->client_id,
+                    'mac_address'   => $p['printer_id'],
+                    'device_name'   => $p['device_name'] ?? null,
+                    'printer_type'  => $p['printer_type'] ?? null,
+                    'serial_number' => $p['serial_number'] ?? null,
+                    'status'        => 'offline',
                 ]);
             }
         }
@@ -151,6 +153,7 @@ class ClientMasterController extends Controller
             'printers.*.printer_id'         => 'required_with:printers|string|max:100',
             'printers.*.device_name'        => 'nullable|string|max:100',
             'printers.*.printer_type'       => 'nullable|string|max:50',
+            'printers.*.serial_number'      => 'nullable|string|max:100',
         ]);
 
         $data = $request->only([
@@ -188,19 +191,21 @@ class ClientMasterController extends Controller
             if (!empty($p['id'])) {
                 // Update existing
                 Printer::where('id', $p['id'])->where('client_id', $client->client_id)->update([
-                    'mac_address'  => $p['printer_id'],
-                    'device_name'  => $p['device_name'] ?? null,
-                    'printer_type' => $p['printer_type'] ?? null,
+                    'mac_address'   => $p['printer_id'],
+                    'device_name'   => $p['device_name'] ?? null,
+                    'printer_type'  => $p['printer_type'] ?? null,
+                    'serial_number' => $p['serial_number'] ?? null,
                 ]);
                 $submittedIds[] = $p['id'];
             } else {
                 // Create new
                 $newPrinter = Printer::create([
-                    'client_id'    => $client->client_id,
-                    'mac_address'  => $p['printer_id'],
-                    'device_name'  => $p['device_name'] ?? null,
-                    'printer_type' => $p['printer_type'] ?? null,
-                    'status'       => 'offline',
+                    'client_id'     => $client->client_id,
+                    'mac_address'   => $p['printer_id'],
+                    'device_name'   => $p['device_name'] ?? null,
+                    'printer_type'  => $p['printer_type'] ?? null,
+                    'serial_number' => $p['serial_number'] ?? null,
+                    'status'        => 'offline',
                 ]);
                 $submittedIds[] = $newPrinter->id;
             }
