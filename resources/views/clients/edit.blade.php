@@ -321,6 +321,78 @@
                     </div>
                 </div>
 
+                {{-- Printers --}}
+                <div class="accordion-item border mb-4">
+                    <h2 class="accordion-header" id="headingPrinters">
+                        <div class="accordion-button collapsed bg-white" data-bs-toggle="collapse"
+                            data-bs-target="#collapsePrinters" aria-expanded="true" aria-controls="collapsePrinters">
+                            <div class="d-flex align-items-center justify-content-between flex-fill">
+                                <h5 class="d-flex align-items-center">
+                                    <i data-feather="printer" class="text-primary me-2"></i>
+                                    <span>Printers
+                                        @if($printers->count())
+                                            <span class="badge bg-primary ms-1">{{ $printers->count() }}</span>
+                                        @endif
+                                    </span>
+                                </h5>
+                            </div>
+                        </div>
+                    </h2>
+                    <div id="collapsePrinters" class="accordion-collapse collapse show" aria-labelledby="headingPrinters">
+                        <div class="accordion-body border-top">
+                            <div id="printerRows">
+                                @foreach($printers as $printer)
+                                <div class="row g-2 mb-2 printer-row align-items-end">
+                                    <input type="hidden" name="printers[{{ $loop->index }}][id]" value="{{ $printer->id }}">
+                                    <div class="col-sm-4 col-12">
+                                        <label class="form-label fs-12 mb-1">Printer ID <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            name="printers[{{ $loop->index }}][printer_id]"
+                                            value="{{ old('printers.'.$loop->index.'.printer_id', $printer->mac_address) }}"
+                                            placeholder="e.g. AA:BB:CC:DD:EE:FF">
+                                    </div>
+                                    <div class="col-sm-4 col-12">
+                                        <label class="form-label fs-12 mb-1">Device Name</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            name="printers[{{ $loop->index }}][device_name]"
+                                            value="{{ old('printers.'.$loop->index.'.device_name', $printer->device_name) }}"
+                                            placeholder="e.g. Kitchen Printer">
+                                    </div>
+                                    <div class="col-sm-3 col-12">
+                                        <label class="form-label fs-12 mb-1">Type</label>
+                                        <select class="form-select form-select-sm" name="printers[{{ $loop->index }}][printer_type]">
+                                            <option value="">-- Select --</option>
+                                            @foreach(['Bluetooth','WiFi','USB','Network'] as $pt)
+                                            <option value="{{ $pt }}" {{ old('printers.'.$loop->index.'.printer_type', $printer->printer_type) == $pt ? 'selected' : '' }}>{{ $pt }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1 col-12">
+                                        <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                                            onclick="this.closest('.printer-row').remove()" title="Remove">
+                                            <i data-feather="trash-2" style="width:14px;height:14px;"></i>
+                                        </button>
+                                    </div>
+                                    @if($printer->status === 'online')
+                                    <div class="col-12">
+                                        <span class="badge bg-success"><i class="ti ti-wifi me-1"></i>Online · Last seen {{ $printer->last_seen_at?->diffForHumans() }}</span>
+                                    </div>
+                                    @else
+                                    <div class="col-12">
+                                        <span class="badge bg-secondary">Offline</span>
+                                    </div>
+                                    @endif
+                                </div>
+                                @endforeach
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addPrinterRow()">
+                                <i data-feather="plus" class="me-1" style="width:14px;height:14px;"></i>Add Printer
+                            </button>
+                            <p class="text-muted fs-12 mt-2 mb-0">Enter the Printer ID printed on the device label (MAC address or unique ID).</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -376,5 +448,39 @@ function updateEndDatePreview() {
 }
 document.getElementById('subscriptionType').addEventListener('change', updateEndDatePreview);
 document.getElementById('subscriptionStartDate').addEventListener('change', updateEndDatePreview);
+
+// ── Printer rows ───────────────────────────────────────────────────────────────
+var printerIndex = {{ $printers->count() }};
+function addPrinterRow(id, printerId, deviceName, printerType) {
+    var idx = printerIndex++;
+    var types = ['Bluetooth','WiFi','USB','Network'];
+    var opts = '<option value="">-- Select --</option>' +
+        types.map(function(t){ return '<option value="'+t+'"'+(printerType===t?' selected':'')+'>'+t+'</option>'; }).join('');
+    var row = document.createElement('div');
+    row.className = 'row g-2 mb-2 printer-row align-items-end';
+    row.innerHTML =
+        (id ? '<input type="hidden" name="printers['+idx+'][id]" value="'+id+'">' : '') +
+        '<div class="col-sm-4 col-12">' +
+            '<label class="form-label fs-12 mb-1">Printer ID <span class="text-danger">*</span></label>' +
+            '<input type="text" class="form-control form-control-sm" name="printers['+idx+'][printer_id]"' +
+            ' placeholder="e.g. AA:BB:CC:DD:EE:FF" value="'+(printerId||'')+'">' +
+        '</div>' +
+        '<div class="col-sm-4 col-12">' +
+            '<label class="form-label fs-12 mb-1">Device Name</label>' +
+            '<input type="text" class="form-control form-control-sm" name="printers['+idx+'][device_name]"' +
+            ' placeholder="e.g. Kitchen Printer" value="'+(deviceName||'')+'">' +
+        '</div>' +
+        '<div class="col-sm-3 col-12">' +
+            '<label class="form-label fs-12 mb-1">Type</label>' +
+            '<select class="form-select form-select-sm" name="printers['+idx+'][printer_type]">'+opts+'</select>' +
+        '</div>' +
+        '<div class="col-sm-1 col-12">' +
+            '<button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest(\'.printer-row\').remove()" title="Remove">' +
+                '<i data-feather="trash-2" style="width:14px;height:14px;"></i>' +
+            '</button>' +
+        '</div>';
+    document.getElementById('printerRows').appendChild(row);
+    if (typeof feather !== 'undefined') feather.replace();
+}
 </script>
 @endsection

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Printer extends Model
 {
     protected $fillable = [
-        'client_id', 'mac_address', 'device_name', 'status', 'last_seen_at',
+        'client_id', 'mac_address', 'device_name', 'printer_type', 'status', 'last_seen_at',
     ];
 
     protected $casts = [

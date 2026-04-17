@@ -48,6 +48,11 @@ class ClientMaster extends Authenticatable implements JWTSubject
     }
 
     // ── Relationships ──────────────────────────────────────────────────────────
+    public function printers()
+    {
+        return $this->hasMany(\App\Models\Printer::class, 'client_id', 'client_id');
+    }
+
     public function roles()
     {
         return $this->hasMany(ClientRole::class, 'client_id', 'client_id');
