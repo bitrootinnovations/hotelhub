@@ -16,6 +16,9 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
+// ── Public pages ──────────────────────────────────────────────────────────────
+Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy-policy');
+
 // ── Root redirect ─────────────────────────────────────────────────────────────
 Route::get('/', function () {
     return redirect()->route('dashboard');
