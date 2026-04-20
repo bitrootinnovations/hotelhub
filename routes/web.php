@@ -18,6 +18,8 @@ Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->
 
 // ── Public pages ──────────────────────────────────────────────────────────────
 Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy-policy');
+Route::get('/account-delete',  [App\Http\Controllers\AccountDeleteController::class, 'show'])->name('account-delete');
+Route::post('/account-delete', [App\Http\Controllers\AccountDeleteController::class, 'submit'])->name('account-delete.submit');
 
 // ── Root redirect ─────────────────────────────────────────────────────────────
 Route::get('/', function () {
